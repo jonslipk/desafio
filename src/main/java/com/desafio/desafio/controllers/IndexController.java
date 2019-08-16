@@ -19,20 +19,12 @@ import com.desafio.desafio.model.CartaoCreditoDAO;
 @Controller
 public class IndexController {
 	
-	@Autowired
-	private CartaoCreditoDAO repository;
-	
-	
-	public IndexController(CartaoCreditoDAO cartaoCreditoDAO) {
-		this.repository = cartaoCreditoDAO;
-	}
-	
-
     @RequestMapping("/")
     //@ResponseBody
     String homePage() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-           System.out.println(gerarNumeroCartao());
-           return "index";
+           //System.out.println(gerarNumeroCartao());
+           //return "cartaoCredito/gerarCartaoCredito";
+    	return "index";
         }
     
     private static String gerarSenha() {

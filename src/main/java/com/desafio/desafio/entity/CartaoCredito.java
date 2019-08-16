@@ -1,6 +1,7 @@
 package com.desafio.desafio.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 
 @Entity
@@ -12,11 +13,16 @@ public class CartaoCredito {
 	private Long id;
 	
 	@Column(name="nom_titular")
+	@NotEmpty
 	private String nomeTitular;
 	
+	@NotEmpty
 	private String numero;
+	@NotEmpty
 	private String validade;
+	@NotEmpty
 	private String saldo;
+	@NotEmpty
 	private String senha;
 	
 	
