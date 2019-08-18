@@ -10,5 +10,6 @@ import com.desafio.desafio.entity.CartaoCredito;
 @Repository
 @Transactional
 public interface CartaoCreditoDAO extends JpaRepository<CartaoCredito, Long> {
-	CartaoCredito findById(long id);
+	
+	
 }

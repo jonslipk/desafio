@@ -1,20 +1,71 @@
 <html xmlns:th="http://thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-<title>Cartão Pré Pago</title>
+<!--Import Google Icon Font-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+	rel="stylesheet" />
+<!--Import materialize.css-->
+<link type="text/css" rel="stylesheet"
+	href="materialize/css/materialize.min.css" media="screen,projection" />
+
+<!--Let browser know website is optimized for mobile-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="style/style.css"/>
 </head>
+
 <body>
-	<h1>Gerar Cartão Pré Pago</h1>
-
-	<form method="post">
-		Nome:<input name="nomeTitular" id="nomeTitular" required="" /> Saldo:<input
-			name="saldo" id="saldo" required="" />
-
-
-		<div th:each ="cartaoCredito : ${cartaoCredito}">
-			<p><span th:text="${cartaoCredito.nomeTitular}"></span></p>
+	<nav>
+		<div class="nav-wrapper">
+			<a href="/" class="brand-logo">Cartão Pré-Pago</a>
+			<ul id="nav-mobile" class="right hide-on-med-and-down">
+				<li><a href="/">Gerar Cartão</a></li>
+				<li><a href="/autorizacao">Autorização de Venda</a></li>
+			</ul>
 		</div>
-		<button id="salvar">Salvar</button>
+	</nav>
+	
+	<div class="card-panel teal amber lighten-1" th:each= "m : ${msg}">
+		<span th:text ="${m}"></span>
+	</div>
+
+	<form method="post" th:object="${cartaoCredito}" th:action="@{/salvar}">
+		
+		<div class="container">
+		<h3 class="header">Gerar Cartão</h3>
+			<div class="row">
+				<div class="input-field col s6">
+					<i class="material-icons prefix">account_circle</i> <input
+						type="text" value="" name="nomeTitular" /> <label
+						for="icon_prefix">Nome do Titular</label>
+				</div>
+				<div class="input-field col s6">
+					<i class="material-icons prefix">attach_money</i> <input
+						type="text"   maxlength="10"  name="saldo" /> <label for="icon_prefix">Saldo
+						do Cartão</label>
+				</div>
+
+
+				<div class="col s6 rigth-align">
+					<button class="waves-effect waves-light btn-large" type="submit">
+						Gerar <i class="material-icons right">send</i>
+					</button>
+				</div>
+			</div>
+		</div>
 	</form>
+	<div class="container" th:if="${cartaoCredito != ''}">
+		
+		<div class="collection" th:each="cartao : ${cartaoCredito}">
+			<a  class="collection-item"><span class="badge" th:text ="${cartao.nomeTitular}"></span>Nome Titular</a>
+			<a  class="collection-item"><span class="badge" th:text ="${cartao.numero}"></span>Número do Cartão</a>
+			<a  class="collection-item"><span class="badge" th:text ="${cartao.cvv}"></span>CVV</a>
+			<a  class="collection-item"><span class="badge" th:text ="${cartao.validade}"></span>Validade</a>
+			<a  class="collection-item"><span class="badge" th:text ="${cartao.senha}"></span>Senha</a>
+			<a  class="collection-item"><span class="badge" th:text ="${cartao.saldo}"></span>Saldo</a>
+		</div>
+	</div>
+
+	<!--JavaScript at end of body for optimized loading-->
+	<script type="text/javascript" src="materialize/js/materialize.min.js"></script>
 </body>
 </html>

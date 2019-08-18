@@ -2,6 +2,8 @@ package com.desafio.desafio.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 
 @Entity
@@ -13,18 +15,22 @@ public class CartaoCredito {
 	private Long id;
 	
 	@Column(name="nom_titular")
-	@NotEmpty
+	@NotEmpty(message = "Nome não pode ser vazio")
+	@NotNull(message = "Nome não pode ser nulo")
 	private String nomeTitular;
 	
-	@NotEmpty
+	@Size(max = 16)
 	private String numero;
-	@NotEmpty
+	
 	private String validade;
-	@NotEmpty
+	@NotEmpty(message = "Saldo não pode ser vazio")
+	@NotNull(message = "Saldo não pode ser nulo")
 	private String saldo;
-	@NotEmpty
+	
 	private String senha;
 	
+	@Transient
+    private String cvv;
 	
 	public Long getId() {
 		return id;
@@ -37,6 +43,12 @@ public class CartaoCredito {
 	}
 	public void setNomeTitular(String nomeTitular) {
 		this.nomeTitular = nomeTitular;
+	}
+	public String getCvv() {
+		return cvv;
+	}
+	public void setCvv(String cvv) {
+		this.cvv = cvv;
 	}
 	public String getNumero() {
 		return numero;

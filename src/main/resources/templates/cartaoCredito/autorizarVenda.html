@@ -16,7 +16,7 @@
 <body>
 	<nav>
 		<div class="nav-wrapper">
-			<a href="/" class="brand-logo">WEX - Cartão Pré-Pago</a>
+			<a href="/" class="brand-logo">Cartão Pré-Pago</a>
 			<ul id="nav-mobile" class="right hide-on-med-and-down">
 				<li><a href="/">Gerar Cartão</a></li>
 				<li><a href="/autorizacao">Autorização de Venda</a></li>
@@ -28,7 +28,7 @@
 		<span th:text="${m}"></span>
 	</div>
 
-	<form method="post" th:object="${cartaoCredito}" th:action="@{/salvar}">
+	<form method="post" th:object="${cartaoCredito}" th:action="@{/autorizar}">
 
 		<div class="container">
 			<h3 class="header">Autorizar Venda</h3>
