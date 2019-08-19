@@ -1,6 +1,7 @@
 package com.desafio.desafio.controllers;
 
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +14,11 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.desafio.desafio.entity.Autorizacao;
 import com.desafio.desafio.entity.CartaoCredito;
+import com.desafio.desafio.entity.Mensagem;
 import com.desafio.desafio.service.CartaoCreditoService;
 
 @Controller
@@ -59,23 +63,23 @@ public class CartaoCreditoController {
 	}
 	
 	@RequestMapping(value = "/autorizar", method =  RequestMethod.POST)
-	public ModelAndView autorizar( @Valid CartaoCredito cartaoCredito, BindingResult result) throws NoSuchAlgorithmException {
+	public ModelAndView autorizar( @Valid Autorizacao autorizacao, BindingResult result, RedirectAttributes attributes) throws NoSuchAlgorithmException, ParseException {
 		
-//		if(result.hasErrors()) {
-//			ModelAndView mvReturn = new ModelAndView("cartaoCredito/autorizarVenda");
-//			mvReturn.addObject("cartaoCredito", "");
-//			List<String> msg = new ArrayList<String>();
-//			for (ObjectError objectError : result.getAllErrors()) {
-//				msg.add(objectError.getDefaultMessage());
-//			}
-//			mvReturn.addObject("msg",msg);
-//			return mvReturn;
-//		}
+		if(result.hasErrors()) {
+			ModelAndView mvReturn = new ModelAndView("cartaoCredito/autorizarVenda");
+			
+			List<String> msg = new ArrayList<String>();
+			for (ObjectError objectError : result.getAllErrors()) {
+				msg.add(objectError.getDefaultMessage());
+			}
+			mvReturn.addObject("msg",msg);
+			return mvReturn;
+		}
 		
 		ModelAndView mv = new ModelAndView("cartaoCredito/autorizarVenda");
-		//CartaoCredito cartao = servico.save(cartaoCredito);
-		System.out.println(cartaoCredito);
-		//mv.addObject("cartaoCredito", cartao);
+		List<Mensagem> mensagens = servico.validarVenda(autorizacao);
+		
+		mv.addObject("mensagens", mensagens);
 
 		return mv;
 		

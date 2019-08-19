@@ -27,33 +27,41 @@
 	<div class="card-panel teal amber lighten-1" th:each="m : ${msg}">
 		<span th:text="${m}"></span>
 	</div>
-
-	<form method="post" th:object="${cartaoCredito}" th:action="@{/autorizar}">
+	<div th:each="mens : ${mensagens}">
+		<div class="card-panel teal " th:classappend="${mens.codigo == '00'} ? 'green' : 'amber lighten-1'">
+			<div class="row">
+				Código:<span th:text="${mens.codigo}"></span>
+			</div>
+			<div class="row">
+				<span th:text="${mens.mensagem}"></span>
+			</div>
+		</div>
+	</div>
+	<form method="post" th:object="${autorizacao}"
+		th:action="@{/autorizar}">
 
 		<div class="container">
 			<h3 class="header">Autorizar Venda</h3>
 			<div class="row">
 				<div class="input-field col s6">
-					<i class="material-icons prefix">exit_to_app</i> <input
-						type="text" value="" name="numero" maxlength="16" /> <label for="icon_prefix">Número
+					<i class="material-icons prefix">exit_to_app</i> <input type="text"
+						value="" name="numero" maxlength="16" /> <label for="icon_prefix">Número
 						Cartão</label>
 				</div>
 				<div class="input-field col s3">
-					<i class="material-icons prefix">event</i> <input
-						type="text" maxlength="4" name="validade" /> <label
-						for="icon_prefix">Validade</label>
+					<i class="material-icons prefix">event</i> <input type="text"
+						maxlength="5" name="validade" /> <label for="icon_prefix">Validade</label>
 				</div>
 				<div class="input-field col s3">
-					<i class="material-icons prefix">copyright</i> <input
-						type="text" value="" name="cvv" maxlength="3" /> <label for="icon_prefix">CVV</label>
+					<i class="material-icons prefix">copyright</i> <input type="text"
+						value="" name="cvv" maxlength="3" /> <label for="icon_prefix">CVV</label>
 				</div>
 			</div>
 			<div class="row">
 
 				<div class="input-field col s6">
-					<i class="material-icons prefix">business</i> <input
-						type="text"  name="estabelecimento" /> <label
-						for="icon_prefix">Estabelecimento</label>
+					<i class="material-icons prefix">business</i> <input type="text"
+						name="estabelecimento" /> <label for="icon_prefix">Estabelecimento</label>
 				</div>
 
 				<div class="input-field col s6">
@@ -70,7 +78,7 @@
 						for="icon_prefix">Senha</label>
 				</div>
 
-				
+
 			</div>
 
 			<div class="row">

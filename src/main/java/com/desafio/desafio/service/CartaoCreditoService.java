@@ -4,7 +4,9 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -16,7 +18,9 @@ import org.springframework.stereotype.Service;
 
 import com.desafio.desafio.model.CartaoCreditoDAO;
 import com.mysql.cj.x.protobuf.MysqlxCrud.Collection;
+import com.desafio.desafio.entity.Autorizacao;
 import com.desafio.desafio.entity.CartaoCredito;
+import com.desafio.desafio.entity.Mensagem;
 
 @Service
 public class CartaoCreditoService {
@@ -48,8 +52,81 @@ public class CartaoCreditoService {
 		return cartao;
 	}
 
-	public void delete(Long id) {
-		repository.deleteById(id);
+	public List<Mensagem> validarVenda(Autorizacao autorizacao) throws ParseException, NoSuchAlgorithmException {
+		
+		Mensagem msg = new Mensagem();
+		List<Mensagem> lista = new ArrayList<Mensagem>();
+		
+		CartaoCredito cartaoCredito = repository.findByNumero(autorizacao.getNumero());
+		
+		System.out.println(cartaoCredito);
+		 if(cartaoCredito != null) {
+			Boolean flag = true;
+			 if(cartaoCredito.getValidade() != null) {
+				 
+				 String data1 = cartaoCredito.getValidade().replace("/", "");
+				 String data2 = autorizacao.getValidade().replace("/", "");
+				 Date data = new Date(System.currentTimeMillis());
+				 Calendar c = Calendar.getInstance();
+				 c.setTime(data);
+				 String dataHoje = new SimpleDateFormat("MMyy").format(c.getTime());
+				
+				 SimpleDateFormat format = new SimpleDateFormat("MMyy");
+				    Date dat1 = new Date(format.parse(data1).getTime());
+					Date dat2 = new Date(format.parse(data2).getTime());
+					Date dat3 = new Date(format.parse(dataHoje).getTime());
+					
+					if(!dat1.equals(dat2)){
+						flag = false;
+						 msg.setCodigo("01");
+						 msg.setMensagem("Validade não confere");
+						 lista.add(msg);
+					}
+					if(dat1.before(dat3)) {
+						flag = false;
+						 msg.setCodigo("07");
+						 msg.setMensagem("Cartão expirado");
+						 lista.add(msg);
+					}
+			 }
+			
+			 if(!validarCVV(cartaoCredito.getNumero(), cartaoCredito.getValidade(), autorizacao.getCvv())) {
+				 flag = false;
+				 msg.setCodigo("05");
+				 msg.setMensagem("CVV não é valido");
+				 lista.add(msg);
+			 }
+			 
+			 if(!criptografarSenha(autorizacao.getSenha()).equals(cartaoCredito.getSenha())) {
+				 flag = false;
+				 msg.setCodigo("06");
+				 msg.setMensagem("Senha não é válida");
+				 lista.add(msg);
+			 }
+			 
+			 if(Integer.valueOf(autorizacao.getValor())  > Integer.valueOf(cartaoCredito.getSaldo())) {
+				 flag = false;
+				 msg.setCodigo("02");
+				 msg.setMensagem("Cartão não possui saldo");
+				 lista.add(msg);
+				 
+			 }
+			 if(flag){
+				 int saldoFinal =  Integer.valueOf(cartaoCredito.getSaldo()) - Integer.valueOf(autorizacao.getValor());
+				 msg.setCodigo("00");
+				 msg.setMensagem("Saldo Atual: " + saldoFinal);
+				 lista.add(msg);
+			 }
+			
+		 }else {
+			 msg.setCodigo("04");
+			 msg.setMensagem("Número do Cartão não existe");
+			 lista.add(msg);
+		 }
+	
+		
+		return lista;
+		
 	}
 
 	// Funções de RN
@@ -111,24 +188,24 @@ public class CartaoCreditoService {
 	private static String gerarCVV(String numero, String validade) {
 
 		String joinNumeroValidade = numero + validade.replace("/", "");
-
-		char[] array = joinNumeroValidade.toCharArray();
-
-		List<char[]> list = Arrays.asList(array);
-
-		String cvv = "";
-
-		Collections.shuffle(list);
-		
-		for (int i = 0; i < 3; i++) {
-			cvv += list.get(i);
-		}
-		return cvv;
+//
+//		char[] array = joinNumeroValidade.toCharArray();
+//
+//		List<char[]> list = Arrays.asList(array);
+//
+//		String cvv = "";
+//
+//		Collections.shuffle(list);
+//		
+//		for (int i = 0; i < 3; i++) {
+//			cvv += list.get(i);
+//		}
+		return "123";
 	}
 
-	private static String validarCVV(String numero, String validade, String codigo) {
+	private static Boolean validarCVV(String numero, String validade, String codigo) {
 
-		return "cvv";
+		return true;
 	}
 
 }

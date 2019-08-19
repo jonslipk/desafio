@@ -1,8 +1,13 @@
 package com.desafio.desafio.entity;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 
@@ -15,16 +20,15 @@ public class CartaoCredito {
 	private Long id;
 	
 	@Column(name="nom_titular")
-	@NotEmpty(message = "Nome não pode ser vazio")
-	@NotNull(message = "Nome não pode ser nulo")
+	@NotBlank(message = "Nome não pode ser vazio")
 	private String nomeTitular;
 	
-	@Size(max = 16)
+	@Column(name="numero")
+	//@Size(max = 16)
 	private String numero;
 	
 	private String validade;
-	@NotEmpty(message = "Saldo não pode ser vazio")
-	@NotNull(message = "Saldo não pode ser nulo")
+	@NotBlank(message = "Saldo não pode ser vazio")
 	private String saldo;
 	
 	private String senha;
