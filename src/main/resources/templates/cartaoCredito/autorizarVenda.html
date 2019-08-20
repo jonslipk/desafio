@@ -28,7 +28,8 @@
 		<span th:text="${m}"></span>
 	</div>
 	<div th:each="mens : ${mensagens}">
-		<div class="card-panel teal " th:classappend="${mens.codigo == '00'} ? 'green' : 'amber lighten-1'">
+		<div class="card-panel teal "
+			th:classappend="${mens.codigo == '00'} ? 'green' : 'amber lighten-1'">
 			<div class="row">
 				Código:<span th:text="${mens.codigo}"></span>
 			</div>
@@ -50,7 +51,8 @@
 				</div>
 				<div class="input-field col s3">
 					<i class="material-icons prefix">event</i> <input type="text"
-						maxlength="5" name="validade" /> <label for="icon_prefix">Validade</label>
+						maxlength="5" name="validade" data-mask="00/00" /> <label
+						for="icon_prefix">Validade</label>
 				</div>
 				<div class="input-field col s3">
 					<i class="material-icons prefix">copyright</i> <input type="text"
@@ -66,8 +68,7 @@
 
 				<div class="input-field col s6">
 					<i class="material-icons prefix">attach_money</i> <input
-						type="text" maxlength="10" name="valor" /> <label
-						for="icon_prefix">Valor</label>
+						type="text" maxlength="12" name="valor" id="valor" /> <label for="icon_prefix">Valor</label>
 				</div>
 			</div>
 			<div class="row">
@@ -92,8 +93,21 @@
 
 		</div>
 	</form>
-
+	
 	<!--JavaScript at end of body for optimized loading-->
 	<script type="text/javascript" src="materialize/js/materialize.min.js"></script>
+	<script type="text/javascript" src="jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="jQueryMaskPlugin/jquery.mask.min.js"></script>
+	<script type="text/javascript" src="jQueryMaskPlugin/jquery.maskMoney.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#valor").maskMoney({
+				showSymbol : true,
+				symbol : "R$",
+				decimal : ",",
+				thousands : "."
+			});
+		});
+	</script>
 </body>
 </html>

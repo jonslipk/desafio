@@ -40,7 +40,7 @@
 				</div>
 				<div class="input-field col s6">
 					<i class="material-icons prefix">attach_money</i> <input
-						type="text"   maxlength="10"  name="saldo" /> <label for="icon_prefix">Saldo
+						type="text"   maxlength="10"  name="saldo" id="saldo" /> <label for="icon_prefix">Saldo
 						do Cartão</label>
 				</div>
 
@@ -67,5 +67,18 @@
 
 	<!--JavaScript at end of body for optimized loading-->
 	<script type="text/javascript" src="materialize/js/materialize.min.js"></script>
+	<script type="text/javascript" src="jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="jQueryMaskPlugin/jquery.mask.min.js"></script>
+	<script type="text/javascript" src="jQueryMaskPlugin/jquery.maskMoney.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#saldo").maskMoney({
+				showSymbol : true,
+				symbol : "R$",
+				decimal : ",",
+				thousands : "."
+			});
+		});
+	</script>
 </body>
 </html>

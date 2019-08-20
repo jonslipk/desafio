@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,94 +40,96 @@ public class CartaoCreditoService {
 		String validade = gerarValidade();
 		String numero = gerarNumeroCartao();
 		String cvv = gerarCVV(numero, validade);
-
+		String saldo = cartaoCredito.getSaldo();
+		
 		cartaoCredito.setNumero(numero);
 		cartaoCredito.setSenha(senhaCriptografada);
 		cartaoCredito.setValidade(validade);
+		cartaoCredito.setSaldo(unfotmatValor(saldo).toString());
 
-		CartaoCredito cartao = repository.saveAndFlush(cartaoCredito);
+		 repository.saveAndFlush(cartaoCredito);
 
-		cartao.setCvv(cvv);
-		cartao.setSenha(senha);
+		 cartaoCredito.setCvv(cvv);
+		 cartaoCredito.setSaldo(saldo);
+		 cartaoCredito.setSenha(senha);
 
-		return cartao;
+		return cartaoCredito;
 	}
 
 	public List<Mensagem> validarVenda(Autorizacao autorizacao) throws ParseException, NoSuchAlgorithmException {
-		
+
 		Mensagem msg = new Mensagem();
 		List<Mensagem> lista = new ArrayList<Mensagem>();
-		
+
 		CartaoCredito cartaoCredito = repository.findByNumero(autorizacao.getNumero());
-		
+
 		System.out.println(cartaoCredito);
-		 if(cartaoCredito != null) {
+		if (cartaoCredito != null) {
 			Boolean flag = true;
-			 if(cartaoCredito.getValidade() != null) {
-				 
-				 String data1 = cartaoCredito.getValidade().replace("/", "");
-				 String data2 = autorizacao.getValidade().replace("/", "");
-				 Date data = new Date(System.currentTimeMillis());
-				 Calendar c = Calendar.getInstance();
-				 c.setTime(data);
-				 String dataHoje = new SimpleDateFormat("MMyy").format(c.getTime());
-				
-				 SimpleDateFormat format = new SimpleDateFormat("MMyy");
-				    Date dat1 = new Date(format.parse(data1).getTime());
-					Date dat2 = new Date(format.parse(data2).getTime());
-					Date dat3 = new Date(format.parse(dataHoje).getTime());
-					
-					if(!dat1.equals(dat2)){
-						flag = false;
-						 msg.setCodigo("01");
-						 msg.setMensagem("Validade não confere");
-						 lista.add(msg);
-					}
-					if(dat1.before(dat3)) {
-						flag = false;
-						 msg.setCodigo("07");
-						 msg.setMensagem("Cartão expirado");
-						 lista.add(msg);
-					}
-			 }
-			
-			 if(!validarCVV(cartaoCredito.getNumero(), cartaoCredito.getValidade(), autorizacao.getCvv())) {
-				 flag = false;
-				 msg.setCodigo("05");
-				 msg.setMensagem("CVV não é valido");
-				 lista.add(msg);
-			 }
-			 
-			 if(!criptografarSenha(autorizacao.getSenha()).equals(cartaoCredito.getSenha())) {
-				 flag = false;
-				 msg.setCodigo("06");
-				 msg.setMensagem("Senha não é válida");
-				 lista.add(msg);
-			 }
-			 
-			 if(Integer.valueOf(autorizacao.getValor())  > Integer.valueOf(cartaoCredito.getSaldo())) {
-				 flag = false;
-				 msg.setCodigo("02");
-				 msg.setMensagem("Cartão não possui saldo");
-				 lista.add(msg);
-				 
-			 }
-			 if(flag){
-				 int saldoFinal =  Integer.valueOf(cartaoCredito.getSaldo()) - Integer.valueOf(autorizacao.getValor());
-				 msg.setCodigo("00");
-				 msg.setMensagem("Saldo Atual: " + saldoFinal);
-				 lista.add(msg);
-			 }
-			
-		 }else {
-			 msg.setCodigo("04");
-			 msg.setMensagem("Número do Cartão não existe");
-			 lista.add(msg);
-		 }
-	
-		
+			if (cartaoCredito.getValidade() != null) {
+
+				String data1 = cartaoCredito.getValidade().replace("/", "");
+				String data2 = autorizacao.getValidade().replace("/", "");
+				Date data = new Date(System.currentTimeMillis());
+				Calendar c = Calendar.getInstance();
+				c.setTime(data);
+				String dataHoje = new SimpleDateFormat("MMyy").format(c.getTime());
+
+				SimpleDateFormat format = new SimpleDateFormat("MMyy");
+				Date dat1 = new Date(format.parse(data1).getTime());
+				Date dat2 = new Date(format.parse(data2).getTime());
+				Date dat3 = new Date(format.parse(dataHoje).getTime());
+
+				if (!dat1.equals(dat2)) {
+					flag = false;
+					msg.setCodigo("01");
+					msg.setMensagem("Validade não confere");
+					lista.add(msg);
+				}
+				if (dat1.before(dat3)) {
+					flag = false;
+					msg.setCodigo("07");
+					msg.setMensagem("Cartão expirado");
+					lista.add(msg);
+				}
+			}
+
+			if (!validarCVV(cartaoCredito.getNumero(), cartaoCredito.getValidade(), autorizacao.getCvv())) {
+				flag = false;
+				msg.setCodigo("05");
+				msg.setMensagem("CVV não é valido");
+				lista.add(msg);
+			}
+
+			if (!criptografarSenha(autorizacao.getSenha()).equals(cartaoCredito.getSenha())) {
+				flag = false;
+				msg.setCodigo("06");
+				msg.setMensagem("Senha não é válida");
+				lista.add(msg);
+			}
+
+			if (unfotmatValor(autorizacao.getValor()) > Double.parseDouble(cartaoCredito.getSaldo())) {
+				flag = false;
+				msg.setCodigo("02");
+				msg.setMensagem("Cartão não possui saldo");
+				lista.add(msg);
+
+			}
+			if (flag) {
+				Double saldoFinal = Double.parseDouble(cartaoCredito.getSaldo()) - unfotmatValor(autorizacao.getValor());
+				msg.setCodigo("00");
+				msg.setMensagem("Saldo Atual: " + NumberFormat.getCurrencyInstance().format(saldoFinal));
+				lista.add(msg);
+			}
+
+		} else {
+			msg.setCodigo("04");
+			msg.setMensagem("Número do Cartão não existe");
+			lista.add(msg);
+		}
+
 		return lista;
-		
+
 	}
 
 	// Funções de RN
@@ -184,6 +187,17 @@ public class CartaoCreditoService {
 
 		return numero;
 	}
+
+	private static Double unfotmatValor(String valor) {
+
+		String valorSemPonto = valor.replace(".", "");
+		String valorSemVirgula = valorSemPonto.replace(",", ".");
+	
+		double valorDouble = Double.parseDouble(valorSemVirgula);
+		
+		return valorDouble;
+	}
+	
 
 	private static String gerarCVV(String numero, String validade) {
 

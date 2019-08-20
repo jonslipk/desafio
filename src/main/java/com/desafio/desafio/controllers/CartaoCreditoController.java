@@ -54,7 +54,7 @@ public class CartaoCreditoController {
 		
 		ModelAndView mv = new ModelAndView("cartaoCredito/gerarCartaoCredito");
 		CartaoCredito cartao = servico.save(cartaoCredito);
-		System.out.println(cartao.getNomeTitular());
+		
 		mv.addObject("cartaoCredito", cartao);
 
 		return mv;
