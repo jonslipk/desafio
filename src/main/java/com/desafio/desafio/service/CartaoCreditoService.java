@@ -8,26 +8,25 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.desafio.desafio.model.CartaoCreditoDAO;
-import com.mysql.cj.x.protobuf.MysqlxCrud.Collection;
 import com.desafio.desafio.entity.Autorizacao;
 import com.desafio.desafio.entity.CartaoCredito;
 import com.desafio.desafio.entity.Mensagem;
+import com.desafio.desafio.model.CartaoCreditoDAO;
 
 @Service
 public class CartaoCreditoService {
 
 	@Autowired
 	private CartaoCreditoDAO repository;
+	
+	private final static String BIN = "356981";
 
 	public List<CartaoCredito> findAll() {
 		return repository.findAll();
@@ -176,8 +175,8 @@ public class CartaoCreditoService {
 	private static String gerarNumeroCartao() {
 
 		Random gerador = new Random();
-		String bin = "356981";
-		String numero = bin;
+		
+		String numero = BIN;
 
 		for (int i = 0; i < 10; i++) {
 			int random = gerador.nextInt(9);
@@ -202,24 +201,27 @@ public class CartaoCreditoService {
 	private static String gerarCVV(String numero, String validade) {
 
 		String joinNumeroValidade = numero + validade.replace("/", "");
-//
-//		char[] array = joinNumeroValidade.toCharArray();
-//
-//		List<char[]> list = Arrays.asList(array);
-//
-//		String cvv = "";
-//
-//		Collections.shuffle(list);
-//		
-//		for (int i = 0; i < 3; i++) {
-//			cvv += list.get(i);
-//		}
-		return "123";
+		char[] arraycar = joinNumeroValidade.toCharArray();
+		int soma = 0;
+
+		for (int i = 0; i < arraycar.length; i++) {
+			soma += Integer.parseInt(String.valueOf(arraycar[i]));
+		}
+		String cvv = Integer.toString(soma * 3);
+
+		return cvv;
 	}
 
 	private static Boolean validarCVV(String numero, String validade, String codigo) {
-
-		return true;
+		
+		String cvv = gerarCVV(numero, validade);
+		Boolean flag = false;
+		
+		if(cvv.equals(codigo)) {
+			flag = true;
+		}
+		
+		return flag;
 	}
 
 }
